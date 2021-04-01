@@ -21,14 +21,13 @@ def connect_tactic(project, ticket):
     return server
 
 
-
 #routes
 @app.route('/')
 def hello():
     return 'Hello World!'
 
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/login', methods=['POST'])
 def login():
     request_data = request.get_json(silent=True)
     project = request_data["project"]
@@ -42,16 +41,20 @@ def login():
         return jsonify(ticket)
     except:
         return jsonify({"error": "Invalid Username/Password"})
-    # content = request.get_json(silent=True)
-    # return jsonify(content)
     
 
-@app.route('/tasks', methods=['GET','POST'])
+@app.route('/tasks', methods=['POST'])
 def tasks():
-    request_data = request.get_json(silent=True)
-    server = connect_tactic(request_data["project"], request_data["ticket"])
-    tasks = server.query("sthpw/task")
-    return jsonify(tasks)
+    try:
+        request_data = request.get_json(silent=True)
+        server = connect_tactic(request_data["project"], request_data["ticket"])
+        filters = []
+        filters.append("assigned", request_data["username"])
+        filters.append("project_code", request_data["project"])
+        tasks = server.query("sthpw/task", filters)
+        return jsonify(tasks)
+    except:
+        return jsonify({"error": "Invalid Username/Password"})
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8000)
