@@ -46,16 +46,16 @@ def login():
 
 @app.route('/tasks', methods=['POST'])
 def tasks():
-    try:
+    # try:
         request_data = request.get_json(silent=True)
         server = connect_tactic(request_data["project"], request_data["ticket"])
         filters = []
-        filters.append("assigned", request_data["username"])
-        filters.append("project_code", request_data["project"])
+        filters.append(("assigned", request_data["username"]))
+        filters.append(("project_code", request_data["project"]))
         tasks = server.query("sthpw/task", filters)
         return jsonify(tasks)
-    except:
-        return jsonify({"error": "Invalid Username/Password"})
+    # except:
+        # return jsonify({"error": "Invalid Username/Password"})
 
 
 @app.route('/objects', methods=['POST'])
