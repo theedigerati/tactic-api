@@ -21,6 +21,7 @@ def connect_tactic(project, ticket):
     return server
 
 
+
 #routes
 @app.route('/')
 def hello():
@@ -55,6 +56,17 @@ def tasks():
         return jsonify(tasks)
     except:
         return jsonify({"error": "Invalid Username/Password"})
+
+
+@app.route('/objects', methods=['POST'])
+def shots():
+    try:
+        request_data = request.get_json(silent=True)
+        server = connect_tactic(request_data["project"], request_data["ticket"])
+        objects = server.query(request_data["searchType"])
+        return jsonify(objects)
+    except:
+        return jsonify({"error": "An error occured"})
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8000)
