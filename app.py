@@ -63,7 +63,7 @@ def tasks():
     tasks = server.query("sthpw/task", filters)
     return jsonify(tasks)
     # except:
-        retur/n jsonify({"error": "An error occurred!"})
+        return jsonify({"error": "An error occurred!"})
 
 
 @app.route('/objects', methods=['POST'])
