@@ -114,8 +114,9 @@ def checkin_file():
     path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(path)
 
+    search_key = server.build_search_key(request_data["SOType"], request_data["SOCode"])
     snapshot = server.simple_checkin(
-                search_key=request_data["key"], 
+                search_key=search_key, 
                 context=request_data["process"], 
                 file_path=path, 
                 description=request_data["message"], 
