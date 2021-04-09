@@ -5,6 +5,7 @@ from flask import Flask, jsonify, request
 #third party imports
 from tactic_client_lib.tactic_server_stub import TacticServerStub
 from decouple import config
+from strgen import StringGenerator as SG
 
 #python imports
 import json
@@ -111,7 +112,10 @@ def checkin_file():
 
     #save file before checkin
     file = request.files["file"]
-    path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    unique_filename = SG(r"[\w]{30}").render() + file.filename
+    print(file.filename)
+    print(unique_filename)
+    path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
     print(path)
     file.save(path)
 
