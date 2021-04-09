@@ -54,16 +54,16 @@ def login():
 
 @app.route('/tasks', methods=['POST'])
 def tasks():
-    # try:
-    request_data = request.get_json(silent=True)
-    server = connect_tactic(request_data["project"], request_data["ticket"])
-    filters = []
-    filters.append(("assigned", request_data["username"]))
-    filters.append(("project_code", request_data["project"]))
-    tasks = server.query("sthpw/task", filters)
-    return jsonify(tasks)
-    # except:
-        # return jsonify({"error": "An error occurred!"})
+    try:
+        request_data = request.get_json(silent=True)
+        server = connect_tactic(request_data["project"], request_data["ticket"])
+        filters = []
+        filters.append(("assigned", request_data["username"]))
+        filters.append(("project_code", request_data["project"]))
+        tasks = server.query("sthpw/task", filters)
+        return jsonify(tasks)
+    except:
+        return jsonify({"error": "An error occurred!"})
 
 
 @app.route('/objects', methods=['POST'])
@@ -151,11 +151,24 @@ def checkin_note():
 
 @app.route('/notes', methods=['POST'])
 def notes():
-    request_data = request.get_json(silent=True)
-    server = connect_tactic(request_data["project"], request_data["ticket"])
+    try:
+        request_data = request.get_json(silent=True)
+        server = connect_tactic(request_data["project"], request_data["ticket"])
+        notes = server.query("sthpw/note")
+        return jsonify(notes)
+    except:
+        return jsonify({"error": "An error occured!"})
 
-    notes = server.query("sthpw/note")
-    return jsonify(notes)
+
+@app.route('/projects', methods=['POST'])
+def projects():
+    try:
+        request_data = request.get_json(silent=True)
+        server = connect_tactic(request_data["project"], request_data["ticket"])
+        projects = server.query("sthpw/project")
+        return jsonify(projects)
+    except:
+        return jsonify({"error": "An error occured!"})
 
 
 
