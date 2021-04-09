@@ -1,3 +1,4 @@
 env/
 .env
 tactic_client_lib/
+media/

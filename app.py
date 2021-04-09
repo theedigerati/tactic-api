@@ -112,6 +112,7 @@ def checkin_file():
     #save file before checkin
     file = request.files["file"]
     path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    print(path)
     file.save(path)
 
     search_key = server.build_search_key(request_data["SOType"], request_data["SOCode"])
