@@ -94,7 +94,8 @@ def get_path():
     try:
         request_data = request.get_json(silent=True)
         server = connect_tactic(request_data["project"], request_data["ticket"])
-        path = server.get_path_from_snapshot(request_data["code"], mode="web")
+        path = server.get_path_from_snapshot(request_data["snapshotCode"], mode="web")
+        path = host + path
         return jsonify(path)
     except:
         return jsonify({"error": "An error occured"})
@@ -113,10 +114,7 @@ def checkin_file():
     #save file before checkin
     file = request.files["file"]
     unique_filename = SG(r"[\w]{30}").render() + file.filename
-    print(file.filename)
-    print(unique_filename)
     path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-    print(path)
     file.save(path)
 
     search_key = server.build_search_key(request_data["SOType"], request_data["SOCode"])
