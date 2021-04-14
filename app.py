@@ -105,28 +105,43 @@ def get_path():
 def checkin_file():
     request_data = json.loads(request.form.get("json_data"))
     server = connect_tactic(request_data["project"], request_data["ticket"])
-
+    
     #update task status
     updated_data = server.update(search_key=request_data["key"], data={"status": request_data["status"]})
     if(not updated_data):
         return jsonify({"error": "An error occurred"})
 
-    #save file before checkin
-    file = request.files["file"]
-    unique_filename = SG(r"[\w]{30}").render() + file.filename
-    path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-    file.save(path)
 
-    search_key = server.build_search_key(request_data["SOType"], request_data["SOCode"])
-    snapshot = server.simple_checkin(
-                search_key=search_key, 
-                context=request_data["process"], 
-                file_path=path, 
-                description=request_data["message"], 
-                mode="upload")
-    if(snapshot):
-        return jsonify({"success": "Checkin completed!"})
-    else:
+    #add note
+    created_note = server.create_note(
+                    search_key=request_data["SOKey"], 
+                    note=request_data["message"], 
+                    process=request_data["process"], 
+                    user=request_data["username"])
+    if(!created_note):
+        return jsonify({"error": "An error occurred!"})
+
+
+
+    try:
+        #save file before checkin
+        file = request.files["file"]
+        unique_filename = SG(r"[\w]{30}").render() + file.filename
+        path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(path)
+
+        search_key = server.build_search_key(request_data["SOType"], request_data["SOCode"])
+        snapshot = server.simple_checkin(
+                    search_key=search_key, 
+                    context=request_data["process"], 
+                    file_path=path, 
+                    description=request_data["message"], 
+                    mode="upload")
+        if(snapshot):
+            return jsonify({"success": "Checkin completed!"})
+        else:
+            return jsonify({"error": "An error occurred!"})
+    except:
         return jsonify({"error": "An error occurred!"})
 
 
@@ -169,6 +184,17 @@ def projects():
         request_data = request.get_json(silent=True)
         server = connect_tactic(request_data["project"], request_data["ticket"])
         projects = server.query("sthpw/project")
+        return jsonify(projects)
+    except:
+        return jsonify({"error": "An error occured!"})
+
+
+@app.route('/process-state', methods=['POST'])
+def process_state():
+    try:
+        request_data = request.get_json(silent=True)
+        server = connect_tactic(request_data["project"], request_data["ticket"])
+        projects = server.query("config/process_state")
         return jsonify(projects)
     except:
         return jsonify({"error": "An error occured!"})
