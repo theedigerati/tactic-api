@@ -118,7 +118,7 @@ def checkin_file():
                     note=request_data["message"], 
                     process=request_data["process"], 
                     user=request_data["username"])
-    if(!created_note):
+    if(not created_note):
         return jsonify({"error": "An error occurred!"})
 
 
