@@ -132,7 +132,7 @@ def checkin_file():
                     user=request_data["username"])
 
         #update shot frames
-        server.update(search_key=request_data["SOKey"], data={"shot_length": request_data["totalFrames"]})
+        updated_shots = server.update(search_key=request_data["SOKey"], data={"shot_length": request_data["totalFrames"]})
 
         return jsonify({"success": "Checkin completed!"})
     # except:
