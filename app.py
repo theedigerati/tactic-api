@@ -130,7 +130,10 @@ def checkin_file():
                         note=request_data["message"], 
                         process=request_data["process"], 
                         user=request_data["username"])
-                        
+
+            #update shot frames
+            server.update(search_key=request_data["SOKey"], data={"shot_length": request_data["totalFrames"]})
+
             return jsonify({"success": "Checkin completed!"})
     except:
         return jsonify({"error": "An error occurred!"})
