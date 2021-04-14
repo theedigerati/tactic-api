@@ -107,17 +107,6 @@ def checkin_file():
     server = connect_tactic(request_data["project"], request_data["ticket"])
     
     try:
-        #update task status
-        updated_data = server.update(search_key=request_data["key"], data={"status": request_data["status"]})
-
-        #add note
-        created_note = server.create_note(
-                        search_key=request_data["SOKey"], 
-                        note=request_data["message"], 
-                        process=request_data["process"], 
-                        user=request_data["username"])
-
-
         #save file before checkin
         file = request.files["file"]
         unique_filename = SG(r"[\w]{30}").render() + file.filename
@@ -132,6 +121,16 @@ def checkin_file():
                     description=request_data["message"], 
                     mode="upload")
         if(snapshot):
+            #update task status
+            updated_data = server.update(search_key=request_data["key"], data={"status": request_data["status"]})
+
+            #add note
+            created_note = server.create_note(
+                        search_key=request_data["SOKey"], 
+                        note=request_data["message"], 
+                        process=request_data["process"], 
+                        user=request_data["username"])
+                        
             return jsonify({"success": "Checkin completed!"})
     except:
         return jsonify({"error": "An error occurred!"})
