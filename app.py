@@ -106,38 +106,38 @@ def checkin_file():
     request_data = json.loads(request.form.get("json_data"))
     server = connect_tactic(request_data["project"], request_data["ticket"])
     
-    # try:
-    #save file before checkin
-    file = request.files["file"]
-    unique_filename = SG(r"[\w]{30}").render() + file.filename
-    path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-    file.save(path)
+    try:
+        #save file before checkin
+        file = request.files["file"]
+        unique_filename = SG(r"[\w]{30}").render() + file.filename
+        path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(path)
 
-    search_key = server.build_search_key(request_data["SOType"], request_data["SOCode"])
-    snapshot = server.simple_checkin(
-                search_key=search_key, 
-                context=request_data["process"], 
-                file_path=path, 
-                description=request_data["message"], 
-                mode="upload")
-    if(snapshot):
-        #update task status
-        updated_data = server.update(search_key=request_data["key"], data={"status": request_data["status"]})
+        search_key = server.build_search_key(request_data["SOType"], request_data["SOCode"])
+        snapshot = server.simple_checkin(
+                    search_key=search_key, 
+                    context=request_data["process"], 
+                    file_path=path, 
+                    description=request_data["message"], 
+                    mode="upload")
+        if(snapshot):
+            #update task status
+            updated_data = server.update(search_key=request_data["key"], data={"status": request_data["status"]})
 
-        #add note
-        created_note = server.create_note(
-                    search_key=request_data["SOKey"], 
-                    note=request_data["message"], 
-                    process=request_data["process"], 
-                    user=request_data["username"])
+            #add note
+            created_note = server.create_note(
+                        search_key=request_data["SOKey"], 
+                        note=request_data["message"], 
+                        process=request_data["process"], 
+                        user=request_data["username"])
 
-        #update shot frames
-        print(request_data["totalFrames"])
-        updated_shots = server.update(search_key=request_data["SOKey"], data={"shot_length": request_data["totalFrames"]})
+            #update shot frames
+            print(request_data["totalFrames"])
+            updated_shots = server.update(search_key=request_data["SOKey"], data={"shot_length": request_data["totalFrames"]})
 
-        return jsonify({"success": "Checkin completed!"})
-    # except:
-        # return jsonify({"error": "An error occurred!"})
+            return jsonify({"success": "Checkin completed!"})
+    except:
+        return jsonify({"error": "An error occurred!"})
 
 
 @app.route('/checkin-note', methods=['POST'])
