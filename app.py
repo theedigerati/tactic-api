@@ -198,6 +198,17 @@ def process_state():
         return jsonify(projects)
     except:
         return jsonify({"error": "An error occured!"})
+        
+
+@app.route('/users', methods=['POST'])
+def users():
+    try:
+        request_data = request.get_json(silent=True)
+        server = connect_tactic(request_data["project"], request_data["ticket"])
+        uses = server.query("sthpw/login")
+        return jsonify(users)
+    except:
+        return jsonify({"error": "An error occured!"})
 
 
 
